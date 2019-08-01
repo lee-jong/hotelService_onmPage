@@ -85,7 +85,10 @@ class Pagination extends Component {
     const { active } = this.state;
     let totalPage = Math.ceil(total / dataPerPage);
     if (active + pageNo > totalPage)
-      return this.setState({ active: totalPage });
+      return this.setState({ active: totalPage }, () =>
+        handleChangePage(this.state.active)
+      );
+
     this.setState(
       {
         active: active + pageNo
@@ -97,7 +100,10 @@ class Pagination extends Component {
   prevPage = pageNo => {
     const { handleChangePage } = this.props;
     const { active } = this.state;
-    if (active - pageNo < 1) return this.setState({ active: 1 });
+    if (active - pageNo < 1)
+      return this.setState({ active: 1 }, () =>
+        handleChangePage(this.state.active)
+      );
     this.setState(
       {
         active: active - pageNo

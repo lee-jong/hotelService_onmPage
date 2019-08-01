@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import { getRepresent, modifyRepresent } from '../../actions/represent';
 import Router from 'next/router';
+import {
+  toggleButton,
+  addColonToDate,
+  deleteColonFromDate
+} from '../../helpers/utils';
+import OptionBoxList from '../../components/list/OptionBoxList';
 
 class representModify extends Component {
   static async getInitialProps() {
@@ -10,162 +16,107 @@ class representModify extends Component {
         represent
       };
     } catch (err) {
-      console.log('err', err);
+      console.error('Unexpected Error', err);
     }
   }
+
+  // RS = CODE_101 = 프론트
+  // RV = CODE_101 = 예약문의
+  // RS = CODE_102 = 룸 서비스
+  // HK = CODE_103 = 하우스 키핑
+
   constructor(props) {
     super(props);
 
     this.state = {
-      oneUseTypeChange: '',
-      twoUseTypeChange: '',
-      threeUseTypeChange: '',
-      fourUseTypeChange: '',
-      oneUseStartTime: this.props.represent.result[0].useStartTime
-        ? this.props.represent.result[0].useStartTime.slice(0, 2) +
-          ':' +
-          this.props.represent.result[0].useStartTime.slice(2, 4)
-        : '00:00', // 시작 시간
-      twoUseStartTime: this.props.represent.result[1].useStartTime
-        ? this.props.represent.result[1].useStartTime.slice(0, 2) +
-          ':' +
-          this.props.represent.result[1].useStartTime.slice(2, 4)
-        : '00:00',
-      threeUseStartTime: this.props.represent.result[2].useStartTime
-        ? this.props.represent.result[2].useStartTime.slice(0, 2) +
-          ':' +
-          this.props.represent.result[2].useStartTime.slice(2, 4)
-        : '00:00',
-      fourUseStartTime: this.props.represent.result[3].useStartTime
-        ? this.props.represent.result[3].useStartTime.slice(0, 2) +
-          ':' +
-          this.props.represent.result[3].useStartTime.slice(2, 4)
-        : '00:00',
-      oneUseEndTime: this.props.represent.result[0].useEndTime
-        ? this.props.represent.result[0].useEndTime.slice(0, 2) +
-          ':' +
-          this.props.represent.result[0].useEndTime.slice(2, 4)
-        : '00', // 끝난 시간
-      twoUseEndTime: this.props.represent.result[1].useEndTime
-        ? this.props.represent.result[1].useEndTime.slice(0, 2) +
-          ':' +
-          this.props.represent.result[1].useEndTime.slice(2, 4)
-        : '00',
-      threeUseEndTime: this.props.represent.result[2].useEndTime
-        ? this.props.represent.result[2].useEndTime.slice(0, 2) +
-          ':' +
-          this.props.represent.result[2].useEndTime.slice(2, 4)
-        : '00',
-      fourUseEndTime: this.props.represent.result[3].useEndTime
-        ? this.props.represent.result[3].useEndTime.slice(0, 2) +
-          ':' +
-          this.props.represent.result[3].useEndTime.slice(2, 4)
-        : '00'
+      FRUseType: this.props.represent.result[0].useType,
+      RVUseType: this.props.represent.result[1].useType,
+      RSUseType: this.props.represent.result[2].useType,
+      HKUseType: this.props.represent.result[3].useType,
+      FRUseStartTime: addColonToDate(
+        this.props.represent.result[0].useStartTime
+      ),
+      RVUseStartTime: addColonToDate(
+        this.props.represent.result[1].useStartTime
+      ),
+      RSUseStartTime: addColonToDate(
+        this.props.represent.result[2].useStartTime
+      ),
+      HKUseStartTime: addColonToDate(
+        this.props.represent.result[3].useStartTime
+      ),
+      FRUseEndTime: addColonToDate(this.props.represent.result[0].useEndTime),
+      RVUseEndTime: addColonToDate(this.props.represent.result[1].useEndTime),
+      RSUseEndTime: addColonToDate(this.props.represent.result[2].useEndTime),
+      HKUseEndTime: addColonToDate(this.props.represent.result[3].useEndTime)
     };
   }
 
-  oneUseStartChangeTime = e => {
-    let oneUseTime = e.target.value;
-    this.setState({ oneUseStartTime: oneUseTime });
+  handleChangeOption = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
   };
 
-  oneUseEndChangeTime = e => {
-    let oneEndTime = e.target.value;
-    this.setState({ oneUseEndTime: oneEndTime });
+  FRHandleOnOffRepresent = e => {
+    this.setState({ FRUseType: !this.state.FRUseType });
   };
-
-  twoUseStartChangeTime = e => {
-    let twoUseTime = e.target.value;
-    this.setState({ twoUseStartTime: twoUseTime });
+  RVHandleOnOffRepresent = e => {
+    this.setState({ RVUseType: !this.state.RVUseType });
   };
-
-  twoUseEndChangeTime = e => {
-    let twoEndTime = e.target.value;
-    this.setState({ twoUseEndTime: twoEndTime });
+  RSHandleOnOffRepresent = e => {
+    this.setState({ RSUseType: !this.state.RSUseType });
   };
-
-  threeUseStartChangeTime = e => {
-    let threeUseTime = e.target.value;
-    this.setState({ threeUseStartTime: threeUseTime });
-  };
-
-  threeUseEndChangeTime = e => {
-    let threeEndTime = e.target.value;
-    this.setState({ threeUseEndTime: threeEndTime });
-  };
-
-  fourUseStartChangeTime = e => {
-    let fourUseTime = e.target.value;
-    this.setState({ fourUseStartTime: fourUseTime });
-  };
-
-  fourUseEndChangeTime = e => {
-    let fourEndTime = e.target.value;
-    this.setState({ fourUseEndTime: fourEndTime });
-  };
-
-  oneHandleOnOffRepresent = e => {
-    this.setState({ oneUseTypeChange: e.target.value });
-  };
-  twoHandleOnOffRepresent = e => {
-    this.setState({ twoUseTypeChange: e.target.value });
-  };
-  threeHandleOnOffRepresent = e => {
-    this.setState({ threeUseTypeChange: e.target.value });
-  };
-  fourHandleOnOffRepresent = e => {
-    this.setState({ fourUseTypeChange: e.target.value });
+  HKHandleOnOffRepresent = e => {
+    this.setState({ HKUseType: !this.state.HKUseType });
   };
 
   offModifyRepresent = async () => {
     const {
-      oneUseTypeChange,
-      oneUseStartTime,
-      oneUseEndTime,
-      twoUseTypeChange,
-      twoUseStartTime,
-      twoUseEndTime,
-      threeUseTypeChange,
-      threeUseStartTime,
-      threeUseEndTime,
-      fourUseTypeChange,
-      fourUseStartTime,
-      fourUseEndTime
+      FRUseType,
+      FRUseStartTime,
+      FRUseEndTime,
+      RVUseType,
+      RVUseStartTime,
+      RVUseEndTime,
+      RSUseType,
+      RSUseStartTime,
+      RSUseEndTime,
+      HKUseType,
+      HKUseStartTime,
+      HKUseEndTime
     } = this.state;
 
     let representatives = [
       {
         groupCode: 'CODE_101',
-        useType: oneUseTypeChange ? true : false,
-        useStartTime: oneUseStartTime.slice(0, 2) + oneUseStartTime.slice(3, 5),
-        useEndTime: oneUseEndTime.slice(0, 2) + oneUseEndTime.slice(3, 5)
+        useType: FRUseType ? true : false,
+        useStartTime: deleteColonFromDate(FRUseStartTime),
+        useEndTime: deleteColonFromDate(FRUseEndTime)
       },
       {
         groupCode: 'CODE_102',
-        useType: twoUseTypeChange ? true : false,
-        useStartTime: twoUseStartTime.slice(0, 2) + twoUseStartTime.slice(3, 5),
-        useEndTime: twoUseEndTime.slice(0, 2) + twoUseEndTime.slice(3, 5)
+        useType: RVUseType ? true : false,
+        useStartTime: deleteColonFromDate(RVUseStartTime),
+        useEndTime: deleteColonFromDate(RVUseEndTime)
       },
       {
         groupCode: 'CODE_103',
-        useType: threeUseTypeChange ? true : false,
-        useStartTime:
-          threeUseStartTime.slice(0, 2) + threeUseStartTime.slice(3, 5),
-        useEndTime: threeUseEndTime.slice(0, 2) + threeUseEndTime.slice(3, 5)
+        useType: RSUseType ? true : false,
+        useStartTime: deleteColonFromDate(RSUseStartTime),
+        useEndTime: deleteColonFromDate(RSUseEndTime)
       },
       {
         groupCode: 'CODE_104',
-        useType: fourUseTypeChange ? true : false,
-        useStartTime:
-          fourUseStartTime.slice(0, 2) + fourUseStartTime.slice(3, 5),
-        useEndTime: fourUseEndTime.slice(0, 2) + fourUseEndTime.slice(3, 5)
+        useType: HKUseType ? true : false,
+        useStartTime: deleteColonFromDate(HKUseStartTime),
+        useEndTime: deleteColonFromDate(HKUseEndTime)
       }
     ];
 
     try {
       let res = await modifyRepresent(representatives);
 
-      // TODO 여기서 api 정상 처리후 분기 태워주기 성공할 시 전 페이지 실패시 그대로 현재 API 미완
       if (res.code === 200) {
         alert('성공');
         const href = `/represent`;
@@ -175,34 +126,24 @@ class representModify extends Component {
       }
     } catch (err) {
       alert('실패하셨습니다');
-      console.log('err', err);
+      console.error('Unexpected Error', err);
     }
-  };
-
-  timeSelect = () => {
-    let time = [];
-    for (let i = 0; i < 24; i++) {
-      let time2 =
-        i < 10 ? (
-          <option key={i}> {'0' + i + ':00'} </option>
-        ) : (
-          <option> {i + ':00'} </option>
-        );
-      time.push(time2);
-    }
-    return time;
   };
 
   render() {
     const {
-      oneUseStartTime,
-      twoUseStartTime,
-      threeUseStartTime,
-      fourUseStartTime,
-      oneUseEndTime,
-      twoUseEndTime,
-      threeUseEndTime,
-      fourUseEndTime
+      FRUseStartTime,
+      RVUseStartTime,
+      RSUseStartTime,
+      HKUseStartTime,
+      FRUseEndTime,
+      RVUseEndTime,
+      RSUseEndTime,
+      HKUseEndTime,
+      FRUseType,
+      RVUseType,
+      RSUseType,
+      HKUseType
     } = this.state;
     return (
       <div className="content-container">
@@ -220,123 +161,67 @@ class representModify extends Component {
                     <th rowSpan="4">대표 ID 사용 여부</th>
                     <td>
                       CODE 101
-                      <input
-                        onChange={this.oneHandleOnOffRepresent}
-                        type="text"
-                      />
+                      {toggleButton(FRUseType, this.FRHandleOnOffRepresent)}
                     </td>
                     <td>
                       CODE 102
-                      <input
-                        onChange={this.twoHandleOnOffRepresent}
-                        type="text"
-                      />
+                      {toggleButton(RVUseType, this.RVHandleOnOffRepresent)}
                     </td>
                     <td>
                       CODE 103
-                      <input
-                        onChange={this.threeHandleOnOffRepresent}
-                        type="text"
-                      />
+                      {toggleButton(RSUseType, this.RSHandleOnOffRepresent)}
                     </td>
                     <td>
                       CODE 104
-                      <input
-                        onChange={this.fourHandleOnOffRepresent}
-                        type="text"
-                      />
+                      {toggleButton(HKUseType, this.HKHandleOnOffRepresent)}
                     </td>
                   </tr>
                   <tr>
                     <th rowSpan="4">대표 ID 연결 시간</th>
-                    <td>
-                      CODE101
-                      <select
-                        className="browser-default"
-                        onChange={this.oneUseStartChangeTime}
-                        value={oneUseStartTime}
-                      >
-                        {this.timeSelect()}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        className="browser-default"
-                        onChange={this.oneUseEndChangeTime}
-                        value={oneUseEndTime}
-                      >
-                        {this.timeSelect()}
-                      </select>
-                    </td>
+                    <OptionBoxList
+                      title={'프론트'}
+                      startTime={FRUseStartTime}
+                      startTimeName="FRUseStartTime"
+                      endTime={FRUseEndTime}
+                      endTimename="FRUseEndTime"
+                      onChangeOption={this.handleChangeOption}
+                    />
                   </tr>
                   <tr>
-                    <td>
-                      CODE102
-                      <select
-                        className="browser-default"
-                        onChange={this.twoUseStartChangeTime}
-                        value={twoUseStartTime}
-                      >
-                        {this.timeSelect()}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        className="browser-default"
-                        onChange={this.twoUseEndChangeTime}
-                        value={twoUseEndTime}
-                      >
-                        {this.timeSelect()}
-                      </select>
-                    </td>
+                    <OptionBoxList
+                      groupCode={'CODE_102'}
+                      startTime={RVUseStartTime}
+                      startTimeName="RVUseStartTime"
+                      endTime={RVUseEndTime}
+                      endTimeName="RVUseEndTime"
+                      onChangeOption={this.handleChangeOption}
+                    />
                   </tr>
                   <tr>
-                    <td>
-                      CODE103
-                      <select
-                        className="browser-default"
-                        onChange={this.threeUseStartChangeTime}
-                        value={threeUseStartTime}
-                      >
-                        {this.timeSelect()}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        className="browser-default"
-                        onChange={this.threeUseEndChangeTime}
-                        value={threeUseEndTime}
-                      >
-                        {this.timeSelect()}
-                      </select>
-                    </td>
+                    <OptionBoxList
+                      groupCode={'CODE_103'}
+                      startTime={RSUseStartTime}
+                      startTimeName="RSUseStartTime"
+                      endTime={RSUseEndTime}
+                      endTimeName="RSUseEndTime"
+                      onChangeOption={this.handleChangeOption}
+                    />
                   </tr>
                   <tr>
-                    <td>
-                      CODE104
-                      <select
-                        className="browser-default"
-                        onChange={this.fourUseStartChangeTime}
-                        value={fourUseStartTime}
-                      >
-                        {this.timeSelect()}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        className="browser-default"
-                        onChange={this.fourUseEndChangeTime}
-                        value={fourUseEndTime}
-                      >
-                        {this.timeSelect()}
-                      </select>
-                    </td>
+                    <OptionBoxList
+                      title={'하우스키핑'}
+                      startTime={HKUseStartTime}
+                      startTimeName="HKUseStartTime"
+                      endTime={HKUseEndTime}
+                      endTimeName="HKUseEndTime"
+                      onChangeOption={this.handleChangeOption}
+                    />
                   </tr>
                 </tbody>
               </table>
             </div>
             <div className="button">
-              <button onClick={() => this.offModifyRepresent()}>설정</button>
+              <button onClick={this.offModifyRepresent}>설정</button>
             </div>
           </div>
         </div>

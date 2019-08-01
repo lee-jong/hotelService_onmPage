@@ -7,6 +7,8 @@ import {
   getManagementsByGroup,
   searchManagements
 } from '../../actions/management';
+import SearchHistory from '../../helpers/SearchHistory';
+import Cookies from 'js-cookie';
 
 class Management extends Component {
   static async getInitialProps() {
@@ -22,7 +24,7 @@ class Management extends Component {
     try {
       management = await getManagementsByPage(pageData);
     } catch (err) {
-      console.log('err', err.message);
+      console.error('Unexpected Error', err);
     }
 
     return {
@@ -33,35 +35,23 @@ class Management extends Component {
   constructor(props) {
     super(props);
 
-    // 리펙토링 1. 구조분해
-    /**
-     * const { result, total } = props.management;
-     * 아래 this.props.mangement 바꾸기.
-     */
-
     this.state = {
       active: 1,
       items: this.props.management.result || [],
       total: this.props.management.result ? this.props.management.total : 0,
-      // 리펙토링 2. dataPerPage 스테이트로 관리 할 필요 없음.
-      // 상수로 상단에 빼놓기 const DATA_PER_PAGE = 10
       dataPerPage: 10,
-      option: '',
-      searchValue: ''
+      option: 'all',
+      searchValue: '',
+      onSearchHistory: false
     };
   }
-  // 리펙토링
-  // 대문자로 메소드 시작?
-  // goToCreatePate로 변경
-  MoveAddManagementPage = () => {
+
+  goToCreatePage = () => {
     const href = `/management/create`;
     Router.push(href);
   };
 
-  // 리펙토링
-  // 대문자로 메소드 시작?
-  // goToDetailPage로 변경
-  MoveDetailManagementPage = id => {
+  goToDetailPage = id => {
     const href = `/management/detail?id=${id}`;
     Router.push(href);
   };
@@ -69,8 +59,8 @@ class Management extends Component {
   handleChangePage = async pageNo => {
     const { searchValue, option } = this.state;
     let pageData = {
-      searchValue: searchValue,
-      option: option,
+      searchValue,
+      option,
       active: pageNo,
       b2bSeq: 1
     };
@@ -80,20 +70,26 @@ class Management extends Component {
         items: res.result,
         total: res.total,
         active: pageNo,
-        option: option
+        option
       });
     } catch (err) {
-      console.log('handleChangePage err', err);
+      console.error('Unexpected Error', err);
+      this.setState({
+        items: [],
+        total: 1,
+        active: 1
+      });
     }
   };
 
   handleManagementByGroup = async e => {
-    const { searchValue, active } = this.state;
+    const { searchValue } = this.state;
+    let optionValue = e.target.value;
     try {
       let searchData = {
-        searchValue: searchValue,
-        option: e.target.value,
-        active: active,
+        searchValue,
+        option: optionValue,
+        active: 1,
         b2bSeq: 1
       };
 
@@ -101,29 +97,48 @@ class Management extends Component {
       this.setState({
         items: res.result,
         total: res.total,
-        option: searchData.option
+        option: optionValue,
+        active: 1
       });
     } catch (err) {
-      console.log('managementsByGroup err', err);
+      console.error('Unexpected Error', err);
+      this.setState({
+        items: [],
+        total: 1,
+        option: optionValue,
+        active: 1
+      });
     }
   };
 
+  handleChange = e => {
+    this.setState({ [e.target.name]: [e.target.value] });
+
+    if (e.target.value.length >= 1)
+      return this.setState({ onSearchHistory: true });
+    if (e.target.value.length <= 0)
+      return this.setState({ onSearchHistory: false });
+  };
+
   handleManagementBySearch = async e => {
-    const { option, active } = this.state;
-    // 리펙트링 3. 왜 previousSibling로 접근하고 있나... 퍼블리싱이 어떻게 나올지 알고?
-    // 1. input box에 ref 걸고 처리하기
-    // 2. Input 값은 모두 onChange 에서 처리하기
-    // 1번 또는 2번 방법으로 처리
+    const { option, searchValue } = this.state;
 
-    let searchValue = e.target.previousSibling.value;
+    //검색 history 관련
+    let storedhistory = Cookies.get('searchHistory')
+      ? Cookies.getJSON('searchHistory')
+      : [];
+    let addStoredhistory = storedhistory.concat(searchValue);
 
-    // 리펙토링 4.
-    // active: active  ==> active, 로 변경
-    // 전 페이지 통일
+    let deduplication = addStoredhistory.filter(
+      (item, pos, self) => self.indexOf(item) == pos
+    );
+    Cookies.set('searchHistory', deduplication);
+    //
+
     let searchData = {
-      searchValue: searchValue,
-      active: active,
-      option: option,
+      searchValue,
+      active: 1,
+      option,
       b2bSeq: 1
     };
 
@@ -132,16 +147,34 @@ class Management extends Component {
       this.setState({
         items: res.result,
         total: res.total,
-        searchValue: searchValue,
         option: option
       });
     } catch (err) {
-      console.log('managementsBySearch err', err);
+      console.error('Unexpected Error', err);
+      this.setState({
+        items: [],
+        total: 1,
+        active: 1
+      });
     }
   };
 
+  handleBlur = () => {
+    this.setState({ onSearchHistory: false });
+  };
+
+  transitionToHistory = value => {
+    this.setState({ searchValue: value });
+  };
+
   render() {
-    const { items, total, dataPerPage } = this.state;
+    const {
+      items,
+      total,
+      dataPerPage,
+      searchValue,
+      onSearchHistory
+    } = this.state;
     return (
       <div className="content-container">
         <div className="content-box">
@@ -160,9 +193,21 @@ class Management extends Component {
                 <option value="CODE_103">룸서비스</option>
                 <option value="CODE_104">하우스키핑</option>
               </select>
-              <input type="text" />
+              <input
+                type="text"
+                name="searchValue"
+                value={searchValue}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                autoComplete="off"
+              />
+              <SearchHistory
+                searchValue={searchValue}
+                onSearchHistory={onSearchHistory}
+                searchChange={this.transitionToHistory}
+              />
               <a
-                onClick={this.handleManagementBySearch}
+                onMouseDown={this.handleManagementBySearch}
                 className="waves-effect waves-light"
               >
                 검색
@@ -187,7 +232,7 @@ class Management extends Component {
                   </tr>
                 </thead>
                 <ManagementList
-                  MoveDetailManagementPage={this.MoveDetailManagementPage}
+                  goToDetailPage={this.goToDetailPage}
                   items={items}
                 />
               </table>
@@ -201,9 +246,7 @@ class Management extends Component {
               prevNum={1}
               superPrevNum={5}
             />
-            <button onClick={() => this.MoveAddManagementPage()}>
-              계정 생성
-            </button>
+            <button onClick={this.goToCreatePage}>계정 생성</button>
           </div>
         </div>
       </div>

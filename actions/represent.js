@@ -1,4 +1,4 @@
-import { axiosInstance, handleError, handleSuccess } from './actionModule';
+import { axiosInstance, handleError, handleSuccess } from './axiosConfig';
 
 export const getRepresent = async () => {
   let data = {
@@ -14,7 +14,8 @@ export const modifyRepresent = async modify => {
   let data = {
     auth: { cpId: 'ConsultingONM', authKey: 'Q29uc3VsdGluZ09OTV9ob3RlbA==' },
     b2bSeq: 1,
-    representatives: modify
+    representatives: modify,
+    adminId: 'cnc_b2b'
   };
 
   return await axiosInstance

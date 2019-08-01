@@ -3,7 +3,6 @@ const express = require('express');
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
 const routes = require('../routes');
-// const handle = app.getRequestHandler();
 const handle = routes.getRequestHandler(app);
 const config = require('./config');
 const middlewares = require('./middlewares');

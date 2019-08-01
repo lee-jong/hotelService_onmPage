@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import Pagination from '../../helpers/Pagination';
 import WorkHistory from '../../components/list/WorkHistoryList';
+import DatePickerList from '../../components/list/DatePickerList';
 import {
   getWorkHistory,
   getHistoryByGroup,
   searchHistory,
   getTeanscationListExcel
 } from '../../actions/workHistory';
-
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { weekAgoDate } from '../../helpers/utils';
+import SearchHistory from '../../helpers/SearchHistory';
+import Cookies from 'js-cookie';
 
 class workHistory extends Component {
   static async getInitialProps() {
@@ -24,7 +25,7 @@ class workHistory extends Component {
     try {
       workHistory = await getWorkHistory(pageData);
     } catch (err) {
-      console.log('err', err.message);
+      console.error('Unexpected Error', err);
     }
 
     return {
@@ -34,15 +35,18 @@ class workHistory extends Component {
   constructor(props) {
     super(props);
 
+    this.Date = new Date();
     this.state = {
       active: 1,
       items: this.props.workHistory.result || [],
-      total: this.props.workHistory.result.length || 1,
-      dataPerPage: 10, // 페이지당 보여줄 수
-      option: '',
+      total: this.props.workHistory.total || 1,
+      dataPerPage: 10,
+      option: 'all',
       searchValue: '',
-      startDate: new Date(),
-      endDate: new Date()
+      startDate: weekAgoDate(this.Date),
+      endDate: new Date(),
+      searchValue: '',
+      onSearchHistory: false
     };
   }
 
@@ -59,63 +63,99 @@ class workHistory extends Component {
   };
 
   handleChangePage = async pageNo => {
-    const { searchValue, option } = this.state;
+    const { searchValue, option, startDate, endDate } = this.state;
     let pageData = {
       searchValue: searchValue,
       option: option,
-      active: pageNo
+      active: pageNo,
+      startDate: startDate,
+      endDate: endDate
     };
     try {
       const res = await getWorkHistory(pageData);
       this.setState({
         items: res.result,
-        total: res.result.length,
+        total: res.total,
         active: pageNo
       });
     } catch (err) {
-      console.log('handleChangePage err', err);
+      console.error('Unexpected Error', err);
+      this.setState({
+        items: [],
+        total: 1,
+        active: 1
+      });
     }
   };
 
   handleHistoryByGroup = async e => {
-    const { searchValue, active } = this.state;
+    const { searchValue, active, startDate, endDate } = this.state;
+    let optionValue = e.target.value;
     try {
       let searchData = {
         searchValue: searchValue,
-        option: e.target.value,
-        active: active
+        option: optionValue,
+        active: active,
+        startDate: startDate,
+        endDate: endDate
       };
       let res = await getHistoryByGroup(searchData);
       this.setState({
         items: res.result,
-        total: res.result.length,
-        option: searchData.option
+        total: res.total,
+        option: optionValue
       });
     } catch (err) {
-      console.log('managementsByGroup err', err);
+      console.error('Unexpected Error', err);
+      this.setState({
+        items: [],
+        total: 1,
+        option: optionValue
+      });
     }
+  };
+  handleChange = e => {
+    this.setState({ [e.target.name]: [e.target.value] });
+    if (e.target.value.length >= 1)
+      return this.setState({ onSearchHistory: true });
+    if (e.target.value.length <= 0)
+      return this.setState({ onSearchHistory: false });
   };
 
   handleHistoryBySearch = async e => {
-    const { option, active, startDate, endDate } = this.state;
-    let searchValue = e.target.previousSibling.value;
+    const { option, active, startDate, endDate, searchValue } = this.state;
+
+    let storedhistory = Cookies.get('searchHistory')
+      ? Cookies.getJSON('searchHistory')
+      : [];
+    let addStoredhistory = storedhistory.concat(searchValue);
+    let deduplication = addStoredhistory.filter(
+      (item, pos, self) => self.indexOf(item) == pos
+    );
+    Cookies.set('searchHistory', deduplication);
+
     let searchData = {
-      searchValue: searchValue,
-      active: active,
-      option: option,
-      startDate: startDate,
-      endDate: endDate
+      searchValue,
+      active,
+      option,
+      startDate,
+      endDate
     };
 
     try {
       let res = await searchHistory(searchData);
       this.setState({
         items: res.result,
-        total: res.result.length,
+        total: res.total,
         searchValue: searchValue
       });
     } catch (err) {
-      console.log('managementsBySearch err', err);
+      console.error('Unexpected Error', err);
+      this.setState({
+        items: [],
+        total: 1,
+        active: 1
+      });
     }
   };
 
@@ -136,12 +176,30 @@ class workHistory extends Component {
       document.body.removeChild(tempLink);
       window.URL.revokeObjectURL(blobURL);
     } catch (err) {
-      console.log('err', err);
+      console.error('Unexpected Error', err);
     }
   };
 
+  handleBlur = () => {
+    this.setState({ onSearchHistory: false });
+  };
+
+  transitionToHistory = value => {
+    this.setState({ searchValue: value });
+  };
+
   render() {
-    const { total, dataPerPage, items, active, option } = this.state;
+    const {
+      total,
+      dataPerPage,
+      items,
+      active,
+      option,
+      startDate,
+      endDate,
+      searchValue,
+      onSearchHistory
+    } = this.state;
     return (
       <div className="content-container">
         <div className="content-box">
@@ -149,22 +207,11 @@ class workHistory extends Component {
 
           <div className="content">
             <div className="search input">
-              <DatePicker
-                dateFormat="yyyy/MM/dd"
-                selected={this.state.startDate}
-                selectsStart
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                onChange={this.handleChangeStart}
-              />
-              <DatePicker
-                dateFormat="yyyy/MM/dd"
-                selected={this.state.endDate}
-                selectsEnd
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                onChange={this.handleChangeEnd}
-                minDate={this.state.startDate}
+              <DatePickerList
+                startDate={startDate}
+                endDate={endDate}
+                handleChangeStart={this.handleChangeStart}
+                handleChangeEnd={this.handleChangeEnd}
               />
 
               <select
@@ -176,10 +223,22 @@ class workHistory extends Component {
                 <option value="b2b"> 관리자 </option>
                 <option value="consultant"> 상담사 </option>
               </select>
-              <input type="text" />
+              <input
+                type="text"
+                name="searchValue"
+                value={searchValue}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                autoComplete="off"
+              />
+              <SearchHistory
+                searchValue={searchValue}
+                onSearchHistory={onSearchHistory}
+                searchChange={this.transitionToHistory}
+              />
               <a
                 className="waves-effect waves-light"
-                onClick={this.handleHistoryBySearch}
+                onMouseDown={this.handleHistoryBySearch}
               >
                 검색
               </a>
@@ -212,8 +271,7 @@ class workHistory extends Component {
               activeProps={active}
               handleChangePage={this.handleChangePage}
             />
-            <button onClick={() => this.downloadTransectionListExcel()}>
-              {' '}
+            <button onClick={this.downloadTransectionListExcel}>
               excel download
             </button>
           </div>

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Pagination from '../../helpers/Pagination';
 import CallHistoryList from '../../components/list/CallHistoryList';
+import DatePickerList from '../../components/list/DatePickerList';
 import {
   getHistory,
   getCallHistoryByGroup,
@@ -10,12 +11,9 @@ import {
   unfoldMemo,
   getCallHistoryListExcel
 } from '../../actions/callHistory';
-import { getDate } from '../../helpers/utils';
-
-// 이걸로 쓰게 되면 css는 header에
-// 그리고 object 반환 하므로 JSON 사용해서 string 으로 변환
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { weekAgoDate } from '../../helpers/utils';
+import SearchHistory from '../../helpers/SearchHistory';
+import Cookies from 'js-cookie';
 
 class CallHistory extends Component {
   static async getInitialProps() {
@@ -23,7 +21,7 @@ class CallHistory extends Component {
     try {
       historyRes = await getHistory();
     } catch (err) {
-      console.log('err', err);
+      console.error('Unexpected Error', err);
     }
     return {
       historyRes
@@ -33,19 +31,20 @@ class CallHistory extends Component {
   constructor(props) {
     super(props);
 
+    this.Date = new Date();
     this.state = {
       onMemo: false, // 메모창을 띄울지 bool
       active: 1, //선택 page
-
       items: this.props.historyRes.result || [], //list item 의 arr
       total: this.props.historyRes.total || 1, //list item 총 수량
       dataPerPage: 10, // 페이지당 보여줄 수
       memo: '', // memo text 저장 state
-      option: '',
+      option: 'all',
       searchValue: '',
       searchType: 'room',
-      startDate: new Date(),
-      endDate: new Date()
+      startDate: weekAgoDate(this.Date),
+      endDate: new Date(),
+      onSearchHistory: false
     };
   }
 
@@ -66,7 +65,11 @@ class CallHistory extends Component {
       document.body.removeChild(tempLink);
       window.URL.revokeObjectURL(blobURL);
     } catch (err) {
-      console.log('err', err);
+      console.error('Unexpected Error', err);
+      this.setState({
+        items: [],
+        total: 1
+      });
     }
   };
 
@@ -85,23 +88,25 @@ class CallHistory extends Component {
   closeMemo = () => {
     this.setState({ onMemo: !this.state.onMemo });
   };
-  // 여기서 api 호출 후 메모에 데이터 넣으면 됨
+
   displayMemo = async idx => {
     try {
       let res = await unfoldMemo(idx);
       this.setState({ onMemo: !this.state.onMemo, memo: res.memo });
     } catch (err) {
-      console.log('err', err);
+      console.error('Unexpected Error', err);
     }
   };
 
   handleChangePage = async pageNo => {
-    const { option, searchValue } = this.state;
+    const { option, searchValue, startDate, endDate } = this.state;
     let data = {
-      option: option,
-      searchValue: searchValue,
+      option,
+      searchValue,
       active: pageNo,
-      b2bSeq: 1
+      b2bSeq: 1,
+      startDate,
+      endDate
     };
     try {
       const res = await getCallHistoryByPage(data);
@@ -111,7 +116,12 @@ class CallHistory extends Component {
         active: pageNo
       });
     } catch (err) {
-      console.log('handlePageChage err', err);
+      console.error('Unexpected Error', err);
+      this.setState({
+        items: [],
+        total: 1,
+        active: 1
+      });
     }
   };
 
@@ -122,62 +132,101 @@ class CallHistory extends Component {
   };
 
   historyByGroup = async e => {
+    let groupValue = e.target.value;
     try {
-      const { searchValue, active } = this.state;
-      let groupValue = e.target.value;
+      const { searchValue, startDate, endDate } = this.state;
+
       let groupData = {
         searchValue: searchValue,
-        active: active,
+        active: 1,
         option: groupValue,
-        b2bSeq: 1
+        b2bSeq: 1,
+        startDate: startDate,
+        endDate: endDate
       };
       const res = await getCallHistoryByGroup(groupData);
-
       this.setState({
         items: res.result,
         total: res.total,
-        option: groupData.group
+        option: groupValue,
+        active: 1
       });
     } catch (err) {
-      console.log(' historyByGroup err', err);
+      console.error('Unexpected Error', err);
       this.setState({
         items: [],
-        total: 1
+        total: 1,
+        option: groupValue,
+        active: 1
       });
     }
   };
-
+  handleChange = e => {
+    this.setState({ [e.target.name]: [e.target.value] });
+    if (e.target.value.length >= 1)
+      return this.setState({ onSearchHistory: true });
+    if (e.target.value.length <= 0)
+      return this.setState({ onSearchHistory: false });
+  };
   historyBySearch = async e => {
-    const { option, searchType, startDate, endDate, active } = this.state;
-    console.log('startDate', typeof startDate);
-    console.log('endDate', endDate);
+    const { option, searchType, startDate, endDate, searchValue } = this.state;
 
-    let searchValue = e.target.previousSibling.value;
+    let storedhistory = Cookies.get('searchHistory')
+      ? Cookies.getJSON('searchHistory')
+      : [];
+    let addStoredhistory = storedhistory.concat(searchValue);
+    let deduplication = addStoredhistory.filter(
+      (item, pos, self) => self.indexOf(item) == pos
+    );
+    Cookies.set('searchHistory', deduplication);
+
     let data = {
-      active: active,
-      option: option,
-      searchValue: searchValue,
-      searchType: searchType,
+      active: 1,
+      option,
+      searchValue,
+      searchType,
       b2bSeq: 1,
-      startDate: startDate,
-      endDate: endDate
+      startDate,
+      endDate
     };
-
     try {
       const res = await getCallHistoryBySearch(data);
       this.setState({
         items: res.result,
         total: res.total,
-        searchValue: searchValue
+        searchValue,
+        active: 1
       });
-      console.log('res:::', res);
     } catch (err) {
-      console.log('historyBySearch err', err);
+      console.error('Unexpected Error', err);
+      this.setState({
+        items: [],
+        total: 1,
+        actvie: 1
+      });
     }
   };
 
+  handleBlur = () => {
+    this.setState({ onSearchHistory: false });
+  };
+  transitionToHistory = value => {
+    this.setState({ searchValue: value });
+  };
+
   render() {
-    const { onMemo, active, total, items, memo, dataPerPage } = this.state;
+    const {
+      onMemo,
+      active,
+      total,
+      items,
+      memo,
+      dataPerPage,
+      startDate,
+      endDate,
+      searchValue,
+      onSearchHistory
+    } = this.state;
     return (
       <div className="content-container">
         <div className="content-box">
@@ -199,22 +248,11 @@ class CallHistory extends Component {
                 </select>
               </div>
               <div>
-                <DatePicker
-                  dateFormat="yyyy/MM/dd"
-                  selected={this.state.startDate}
-                  selectsStart
-                  startDate={this.state.startDate}
-                  endDate={this.state.endDate}
-                  onChange={this.handleChangeStart}
-                />
-                <DatePicker
-                  dateFormat="yyyy/MM/dd"
-                  selected={this.state.endDate}
-                  selectsEnd
-                  startDate={this.state.startDate}
-                  endDate={this.state.endDate}
-                  onChange={this.handleChangeEnd}
-                  minDate={this.state.startDate}
+                <DatePickerList
+                  startDate={startDate}
+                  endDate={endDate}
+                  handleChangeStart={this.handleChangeStart}
+                  handleChangeEnd={this.handleChangeEnd}
                 />
                 <select
                   className="browser-default"
@@ -225,9 +263,21 @@ class CallHistory extends Component {
                   <option value="user">상담사 </option>
                 </select>
 
-                <input type="text" />
+                <input
+                  type="text"
+                  value={searchValue}
+                  name="searchValue"
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  autoComplete="off"
+                />
+                <SearchHistory
+                  searchValue={searchValue}
+                  onSearchHistory={onSearchHistory}
+                  searchChange={this.transitionToHistory}
+                />
                 <a
-                  onClick={this.historyBySearch}
+                  onMouseDown={this.historyBySearch}
                   className="waves-effect waves-light"
                 >
                   검색
@@ -271,7 +321,7 @@ class CallHistory extends Component {
               activeProps={active}
               handleChangePage={this.handleChangePage}
             />
-            <button onClick={() => this.downloadTransectionListExcel()}>
+            <button onClick={this.downloadTransectionListExcel}>
               excel download
             </button>
           </div>

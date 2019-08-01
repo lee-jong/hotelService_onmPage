@@ -9,7 +9,7 @@ class Represent extends Component {
     try {
       res = await getRepresent();
     } catch (err) {
-      console.log('err', err);
+      console.error('Unexpected Error', err);
     }
     return {
       res
@@ -19,7 +19,7 @@ class Represent extends Component {
     super(props);
   }
 
-  onModifyRepresent = async () => {
+  goToLModifyPage = async () => {
     const href = `/represent/modify`;
     Router.push(href);
   };
@@ -43,7 +43,7 @@ class Represent extends Component {
               </table>
             </div>
             <div className="button">
-              <button onClick={() => this.onModifyRepresent()}>수정</button>
+              <button onClick={this.goToLModifyPage}>수정</button>
             </div>
           </div>
         </div>

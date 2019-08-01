@@ -1,7 +1,10 @@
-import { axiosInstance, handleError, handleSuccess } from './actionModule';
-import { getDate } from '../helpers/utils';
+import { axiosInstance, handleError, handleSuccess } from './axiosConfig';
+import { getDate, weekAgoDate } from '../helpers/utils';
 
 export const getWorkHistory = async page => {
+  let startDate = new Date();
+  let endDate = new Date();
+  let startDateWeekAgo = weekAgoDate(startDate);
   let data = {
     auth: { cpId: 'ConsultingONM', authKey: 'Q29uc3VsdGluZ09OTV9ob3RlbA==' },
     listType: page.option,
@@ -9,7 +12,9 @@ export const getWorkHistory = async page => {
     b2bSeq: 1,
     option: {
       offset: 10 * (page.active - 1),
-      limit: 10
+      limit: 10,
+      startTime: getDate(startDateWeekAgo),
+      endTime: getDate(endDate)
     }
   };
 
@@ -27,7 +32,9 @@ export const getHistoryByGroup = async group => {
     b2bSeq: 1,
     option: {
       offset: 10 * (group.active - 1),
-      limit: 10
+      limit: 10,
+      startTime: getDate(group.startDate),
+      endTime: getDate(group.endDate)
     }
   };
 
@@ -47,7 +54,7 @@ export const searchHistory = async search => {
       offset: 10 * (search.active - 1),
       limit: 10,
       startTime: getDate(search.startDate),
-      endTime: getDate(search.endTime)
+      endTime: getDate(search.endDate)
     }
   };
 

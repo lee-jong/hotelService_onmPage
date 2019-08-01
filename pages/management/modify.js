@@ -2,53 +2,75 @@ import React, { Component } from 'react';
 import { modifyManagement, detailManagement } from '../../actions/management';
 import { withRouter } from 'next/router';
 import Router from 'next/router';
+import { toggleButton } from '../../helpers/utils';
+import {
+  comparePasswordCheck,
+  isValidPasswordCheck
+} from '../../helpers/validation';
 
 class Modify extends Component {
+  static async getInitialProps({ query }) {
+    let detailInfo = {};
+    let detailInfoUseType = '';
+
+    try {
+      detailInfo = await detailManagement(query.id);
+
+      detailInfoUseType =
+        detailInfo.result.representativeType === 'N' ? false : true;
+    } catch (err) {
+      console.error('Unexpected Error', err);
+    }
+    return {
+      detailInfo,
+      detailInfoUseType
+    };
+  }
   constructor(props) {
     super(props);
 
     this.state = {
-      info: '',
-      password: '',
-      useType: '',
+      password1: '',
+      password2: '',
+      isValidPassword: '',
+      isEqualPassword: '',
+      pwValidationError: '',
+      pwEqualityError: '',
+      useType: this.props.detailInfoUseType,
       remarks: ''
     };
   }
-  async componentDidMount() {
-    const { router } = this.props;
 
-    try {
-      const detailInfo = await detailManagement(router.query.id);
-      this.setState({ info: detailInfo.result });
-    } catch (err) {
-      console.log('err', err);
-    }
-  }
-
-  // 리펙토링
-  // Input 한 번에 처리할 것
-  onChangePassword = e => {
-    let pw = e.target.value;
-    this.setState({ password: pw });
+  handleChangeInput = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
   };
+
   onChangeUseType = e => {
-    let type = e.target.value ? true : false;
-    this.setState({ useType: type });
-  };
-  onChangeRemarks = e => {
-    let remark = e.target.value;
-    this.setState({ remarks: remark });
+    this.setState({ useType: !this.state.useType });
   };
 
-  // 리펙토링
-  // onSumit 으로 변경
   onChangeSuccess = async () => {
+    const {
+      password1,
+      password2,
+      useType,
+      remarks,
+      isValidPassword,
+      pwValidationError,
+      isEqualPassword,
+      pwEqualityError
+    } = this.state;
+
+    if (password1 && (!isValidPassword || pwValidationError)) return;
+    if (password2 && (!isEqualPassword || pwEqualityError)) return;
+
     try {
       const { id } = this.props.router.query;
-      const { password, useType, remarks } = this.state;
       let data = {
         cUserId: id,
-        cPassword: password,
+        cPassword: password1,
         cUseType: useType,
         cRemarks: remarks
       };
@@ -61,20 +83,54 @@ class Modify extends Component {
         alert('수정이 완료 되지 않았습니다.');
       }
     } catch (err) {
-      console.log('err', err);
+      console.error('Unexpected Error', err);
     }
   };
 
-  // 리펙토링
-  // goToDetailPage로 변경
   onChangeToList = () => {
     const { id } = this.props.router.query;
     const href = `/management/detail?id=${id}`;
     Router.push(href);
   };
 
+  handleValidation = e => {
+    let field = e.target.name;
+    let value = this.state[field];
+    let { password1 } = this.state;
+
+    if (!password1)
+      return this.setState({
+        pwValidationError: '',
+        pwEqualityError: ''
+      });
+
+    switch (field) {
+      case 'password1':
+        let isValidPassword = isValidPasswordCheck(value);
+        this.setState({
+          isValidPassword,
+          pwValidationError: isValidPassword
+            ? ''
+            : '6~16 자 영문 , 숫자, 특수문자를 조합하여 사용하여 주세요'
+        });
+        break;
+
+      case 'password2':
+        let isEqualPassword = comparePasswordCheck(password1, value);
+        this.setState({
+          isEqualPassword,
+          pwEqualityError: isEqualPassword
+            ? ''
+            : '비밀번호가 일치하지 않습니다.'
+        });
+        break;
+    }
+  };
+
   render() {
-    const { info } = this.state;
+    const { useType, pwValidationError, pwEqualityError } = this.state;
+    const { groupName, remark, userId } = this.props.detailInfo.result;
+
     return (
       <div className="content-container">
         <div className="content-box">
@@ -94,64 +150,61 @@ class Modify extends Component {
                   <tr>
                     <th>그룹</th>
                     <td>
-                      <input
-                        type="text"
-                        placeholder={info.groupName}
-                        disabled
-                      />
+                      <input type="text" placeholder={groupName} disabled />
                     </td>
                   </tr>
                   <tr>
                     <th>ID</th>
                     <td>
-                      <input
-                        type="password"
-                        placeholder={info.userId}
-                        disabled
-                      />
+                      <input type="password" placeholder={userId} disabled />
                     </td>
                   </tr>
                   <tr>
                     <th className="browser-default">비밀번호</th>
                     <td>
                       <input
-                        onChange={this.onChangePassword}
+                        name="password1"
+                        onChange={this.handleChangeInput}
                         type="password"
                         placeholder="*******"
+                        onBlur={this.handleValidation}
                       />
+                      <div style={{ color: 'red' }}>{pwValidationError} </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="browser-default">비밀번호 재입력</th>
+                    <td>
+                      <input
+                        name="password2"
+                        onChange={this.handleChangeInput}
+                        type="password"
+                        placeholder="*******"
+                        onBlur={this.handleValidation}
+                      />
+                      <div style={{ color: 'red' }}>{pwEqualityError}</div>
                     </td>
                   </tr>
                   <tr>
                     <th>대표 ID설정</th>
-                    <td>
-                      <input
-                        type="password"
-                        onChange={this.onChangeUseType}
-                        placeholder={
-                          info.representativeType ? '사용중' : '미사용중'
-                        }
-                      />
-                    </td>
+                    <td>{toggleButton(useType, this.onChangeUseType)}</td>
                   </tr>
                   <tr>
                     <th>비고</th>
                     <td>
                       <input
+                        name="remark"
                         type="text"
-                        onChange={this.onChangeRemarks}
-                        placeholder={info.remarks}
+                        onChange={this.handleChangeInput}
+                        placeholder={remark}
                       />
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            {/* 리펙토링 
-            
-              callback 등록...
-            */}
-            <button onClick={() => this.onChangeToList()}>취소 </button>
-            <button onClick={() => this.onChangeSuccess()}>저장 </button>
+            <button onClick={this.onChangeToList}>취소 </button>
+            <button onClick={this.onChangeSuccess}>저장 </button>
           </div>
         </div>
       </div>

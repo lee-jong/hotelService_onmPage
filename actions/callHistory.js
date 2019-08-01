@@ -1,19 +1,24 @@
-import { axiosInstance, handleError, handleSuccess } from './actionModule';
-import { getDate } from '../helpers/utils';
+import { axiosInstance, handleError, handleSuccess } from './axiosConfig';
+import { getDate, weekAgoDate } from '../helpers/utils';
 
 export const getHistory = async () => {
+  let startDate = weekAgoDate(new Date());
+  let endDate = new Date();
   let data = {
     auth: { cpId: 'ConsultingONM', authKey: 'Q29uc3VsdGluZ09OTV9ob3RlbA==' },
-    groupName: 'call',
+    groupName: 'all',
     listType: 'all',
     keyword: '',
     b2bSeq: 1,
     option: {
       offset: 10 * 0,
       limit: 10,
-      sort: 'desc'
+      sort: 'desc',
+      startTime: getDate(startDate),
+      endTime: getDate(endDate)
     }
   };
+
   return await axiosInstance
     .post('/call/getCallHistoryList', data)
     .then(handleSuccess)
@@ -30,7 +35,9 @@ export const getCallHistoryByGroup = async group => {
     option: {
       offset: 10 * (group.active - 1),
       limit: 10,
-      sort: 'desc'
+      sort: 'desc',
+      startTime: getDate(group.startDate),
+      endTime: getDate(group.endDate)
     }
   };
   return await axiosInstance
@@ -50,7 +57,9 @@ export const getCallHistoryByPage = async page => {
     option: {
       offset: 10 * (page.active - 1),
       limit: 10,
-      sort: 'desc'
+      sort: 'desc',
+      startTime: getDate(page.startDate),
+      endTime: getDate(page.endDate)
     }
   };
   return await axiosInstance
@@ -60,7 +69,6 @@ export const getCallHistoryByPage = async page => {
 };
 
 export const getCallHistoryBySearch = async search => {
-  console.log('search:::', search);
   let data = {
     auth: { cpId: 'ConsultingONM', authKey: 'Q29uc3VsdGluZ09OTV9ob3RlbA==' },
     groupName: search.option,
@@ -76,6 +84,7 @@ export const getCallHistoryBySearch = async search => {
       endTime: getDate(search.endDate)
     }
   };
+
   return await axiosInstance
     .post('/call/getCallHistoryList', data)
     .then(handleSuccess)

@@ -39,7 +39,7 @@ class Meta extends Component {
           rel="stylesheet"
         />
 
-        <title> title ! </title>
+        <title> KT Hotel Service - ONM </title>
       </Head>
     );
   }

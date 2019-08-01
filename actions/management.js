@@ -1,6 +1,5 @@
-import { axiosInstance, handleError, handleSuccess } from './actionModule';
+import { axiosInstance, handleError, handleSuccess } from './axiosConfig';
 
-// 처음 기본 리스트
 export const getManagementsByPage = async page => {
   let data = {
     auth: { cpId: 'ConsultingONM', authKey: 'Q29uc3VsdGluZ09OTV9ob3RlbA==' },
@@ -29,7 +28,6 @@ export const getManagementsByGroup = async group => {
       limit: 10
     }
   };
-
   return await axiosInstance
     .post('/user/getConsultantList', data)
     .then(handleSuccess)
@@ -58,11 +56,12 @@ export const createManagement = async management => {
   let data = {
     auth: { cpId: 'ConsultingONM', authKey: 'Q29uc3VsdGluZ09OTV9ob3RlbA==' },
     userId: management.userId,
-    password: management.password,
+    password: management.password1,
     group: management.group,
     isRep: management.isRep,
     remarks: management.remarks,
-    b2bSeq: 1
+    b2bSeq: 1,
+    adminId: 'cnc_b2b'
   };
   return await axiosInstance
     .post('/user/setConsultantAccount', data)
@@ -84,7 +83,8 @@ export const checkDuplicatedId = async id => {
 export const detailManagement = async id => {
   let data = {
     auth: { cpId: 'ConsultingONM', authKey: 'Q29uc3VsdGluZ09OTV9ob3RlbA==' },
-    userId: id
+    userId: id,
+    adminId: 'cnc_b2b'
   };
 
   return await axiosInstance
@@ -96,7 +96,8 @@ export const detailManagement = async id => {
 export const deleteManagement = async id => {
   let data = {
     auth: { cpId: 'ConsultingONM', authKey: 'Q29uc3VsdGluZ09OTV9ob3RlbA==' },
-    userId: id
+    userId: id,
+    adminId: 'cnc_b2b'
   };
   return await axiosInstance
     .post('/user/setDeletionConsultant', data)
@@ -111,7 +112,8 @@ export const modifyManagement = async management => {
     password: management.cPassword,
     isRep: management.cUseType,
     isUsed: true,
-    remarks: management.cRemarks
+    remarks: management.cRemarks,
+    adminId: 'cnc_b2b'
   };
 
   return await axiosInstance
