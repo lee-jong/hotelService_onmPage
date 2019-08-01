@@ -1,0 +1,167 @@
+/* Login */
+.login-wrapper {overflow:hidden;width:100%;height:100%;padding:50px;background-size:cover;background-attachment:fixed;box-sizing:border-box}
+.login-wrapper::before {content:'';position:absolute;top:0;left:0;display:block;width:100%;height:100%;background:rgba(0,0,0,0.5)}
+.login-container {position:relative;width:100%;height:100%;z-index:1}
+.login-box {position:absolute;top:50%;left:50%;width:600px;transform:translate(-50%, -50%);padding:50px;text-align:center;border-radius:15px;background:#fff}
+.login-title .logo {width:290px;height:75px;margin:0 auto 20px}
+.login-title .logo .logo-text-k {color:#363636}
+.login-title .logo .logo-text-no {color:#363636}
+.login-title .logo .admin {position:absolute;top:42px;right:10px;font-family:'Fugaz One';font-size:40px;color:#363636}
+.login-content {margin-top:20px}
+.login-content p {width:80%;margin:0 auto;text-align:left;color:#999}
+.login-input.input input[type=text],
+.login-input.input input[type=password] {width:80%}
+.login-btn {margin-top:30px}
+.login-btn > a {display:inline-block;width:100px;padding:10px 20px;color:#fff;border-radius:5px}
+.login-btn > a + a {margin-left:10px}
+.login-btn > a.submit {background:#d14452}
+.login-btn > a.cancel {background:#777}
+
+/* main */
+.content-box-container {overflow:hidden}
+.content-box-container .content-box {float:left;width:calc(50% - 15px);height:424px;margin-bottom:30px}
+.content-box-container .content-box:first-of-type {width:100%;height:auto}
+.content-box-container .content-box:nth-of-type(2n) {float:right}
+.content-box-container .chart {width:100%;height:350px;margin:0 auto}
+.content-box-container .chart svg {width:100%;height:350px;margin:0 auto}
+
+/* sub */
+.content-box {padding:30px;border-radius:5px;background:#fff;box-shadow:0 6px 0px 0 rgba(0, 0, 0, 0.01), 0 15px 32px 0 rgba(0, 0, 0, 0.06)}
+.content-box .test {overflow:hidden}
+.content-box .title {display:inline-block;line-height:30px;font-size:24px}
+
+.content-box .infomation {display:inline-block;margin-left:10px}
+.content-box .infomation span {font-size:14px;color:#777}
+.content-box .infomation span::before {content:'I';display:inline-block;padding:0 5px;color:#ccc}
+.content-box .infomation span:first-of-type::before {content:none}
+
+.content-box .search {overflow:hidden;margin-top:20px;text-align:center}
+.content-box .search.input select {display:inline-block;width:100px;margin-right:620px;vertical-align:top}
+.content-box .search.input input {width:300px;margin-right:5px;margin-bottom:0;vertical-align:top}
+.content-box .search.input a {display:inline-block;padding:12px 20px;text-align:center;color:#fff;border-radius:4px;background:#d4515f}
+
+.content-box .table {margin-top:20px;border-top:1px solid #555;border-bottom:1px solid #ccc}
+.content-box .table th,
+.content-box .table td {vertical-align:middle;border-top:0;border-bottom:1px solid #e5e5e5}
+.content-box .table th {font-size:14px;background:#f5f5f5}
+.content-box .table td table {width:90% !important}
+.content-box .table td table code {width:100% !important}
+.content-box .table tbody tr:last-child td {border:none}
+.content-box .table .file-download {color:#333}
+.content-box .table .file-download:hover {transition:all .5s;color:#d14452}
+.content-box .table.list th,
+.content-box .table.list td {padding:15px 10px;text-align:center}
+.content-box .table.list td > a {display:inline-block;width:100%;text-align:left;color:#333}
+.content-box .table.list td > a:hover {transition:all .5s;color:#d14452}
+.content-box .table.list td > a.waves-effect {display:inline-block;width:auto;padding:4px 8px;border-radius:4px;border:1px solid #ccc;color:#999}
+.content-box .table.list td > a.delete {color:#fff;border-color:#777;background:#777}
+.content-box .table.list td > a.submit {color:#fff;border-color:#d14452;background:#d14452}
+.content-box .table.list td p {text-align:left}
+.content-box .table.list td p + .comment-input {margin-top:10px}
+.content-box .table.list tr.bg {background:#f5f5f5}
+.content-box .table.list td.reply::before {content:'ㄴ';display:inline-block;width:30px;vertical-align:top}
+.content-box .table.list td.reply::after {content:'';clear:both}
+.content-box .table.list td.reply .comment {display:inline-block;width:calc(100% - 50px);margin-top:0}
+.content-box .table.list td.reply > a {display:inline-block;width:calc(100% - 50px)}
+.content-box .table.view th,
+.content-box .table.view td {padding:15px 20px}
+.content-box .table.view th span {margin-right:5px}
+.content-box .table.view td .info span {margin-right:10px;color:#999}
+.content-box .table.view td .info i {font-size:15px;color:#777}
+.content-box .table.view td .con {padding:50px 0}
+.content-box .table.input > table > tbody > tr > th,
+.content-box .table.input > table > tbody > tr > td {min-height:70px;padding:8px 20px}
+.content-box .table.input tr:last-child th,
+.content-box .table.input tr:last-child td {border:none}
+.content-box .table.input td label {display:none}
+.content-box .table.input td select,
+.content-box .table.input td input[type="text"],
+.content-box .table.input td input[type="password"] {margin:0;width:200px}
+.content-box .table.input td[colspan="3"] input[type="text"],
+.content-box .table.input td[colspan="5"] input[type="text"] {width:100%}
+.content-box .table.input td[colspan="3"] textarea {height:400px}
+.content-box .table.input td input[type="text"].id {width:240px}
+.content-box .table.input td input[type="text"].email {width:40%;min-width:500px}
+.content-box .table.input td input + a {display:inline-block;width:100px;margin-left:5px;padding:10px 20px;text-align:center;color:#fff;border-radius:5px;background:#d14452}
+.content-box .table.input .portfolio-image ul {overflow:hidden;display:table}
+.content-box .table.input .portfolio-image li {display:table-cell;width:200px;margin-right:10px;vertical-align:middle;border:1px solid #e5e5e5}
+.content-box .table.input .portfolio-image li img {width:100%}
+.content-box .table.input .input-field {overflow:hidden;margin:0}
+.content-box .table.input .input-field + .input-field {margin-top:10px}
+.content-box .table.input .input-field .file-path-wrapper {float:left;display:block;width:calc(40% - 100px);margin-right:5px;padding-left:0;vertical-align:middle}
+.content-box .table.input .input-field .file-path-wrapper input[type="text"] {width:100%}
+.content-box .table.input .input-field .file-btn {position:relative;float:left;display:block;padding:12px 20px;vertical-align:middle;text-align:center;color:#fff;border-radius:5px;background:#d14452}
+.content-box .table.input .input-field .file-add,
+.content-box .table.input .input-field .file-del {float:left;display:block;margin-left:5px;padding:12px;vertical-align:middle;text-align:center;color:#fff;border-radius:5px}
+.content-box .table.input .input-field .file-add i,
+.content-box .table.input .input-field .file-del i {font-size:15px}
+.content-box .table.input .input-field .file-add {background:#636363}
+.content-box .table.input .input-field .file-del {padding:11px 12px;border:1px solid #ccc;color:#555}
+.content-box .table.input .input-field .file-download {float:left;line-height:45px}
+.content-box .table.input .date {display:inline-block;width:200px}
+.content-box .table.input .date input {background:transparent}
+.content-box .table.input .date i {float:right;margin-top:-35px;margin-right:5px}
+.content-box .table.input .date .datepicker-modal {top:10% !important}
+.content-box .table.input .date .dropdown-trigger {width:50px;height:auto;padding:0;border:none;}
+.content-box .table.input .date .datepicker-table td {border-bottom:0}
+.content-box .table.input .date .datepicker-date-display,
+.content-box .table.input .date .datepicker-table td.is-selected,
+.content-box .table.input .date button:focus {background:#d14452}
+.content-box .table.input .date button:focus svg {color:#fff}
+.content-box .table.input .date .datepicker-table td.is-today,
+.content-box .table.input .date .datepicker-cancel,
+.content-box .table.input .date .datepicker-clear,
+.content-box .table.input .date .datepicker-today,
+.content-box .table.input .date .datepicker-done {color:#d14452}
+.content-box .table.input .date .datepicker-clear {color:#000}
+.dropdown-content li > span {color:#d14452}
+
+.comment {margin-top:50px}
+.comment .input {position:relative;border-radius:5px}
+.comment .info {position:relative}
+.comment .info strong {font-weight:700;color:#333}
+.comment .info span {display:inline-block;margin-left:5px;color:#999}
+.comment .comment-content {text-align:left}
+.comment .comment-list {margin-top:20px}
+.comment .comment-list .tit {margin-bottom:10px;line-height:normal;font-size:14px;font-weight:700}
+.comment .comment-list .tit span {color:#d14452}
+.comment .comment-list li {padding:15px;font-size:13px;border-bottom:1px solid #e5e5e5}
+.comment .comment-list li:first-child {border-top:1px solid #e5e5e5}
+.comment .comment-list li .con {font-size:13px;color:#777}
+.comment .comment-list li .reply-btn {display:block;margin-top:20px;color:#555}
+.comment .comment-list li .reply-btn span.num {color:#d14452}
+.comment .comment-list li .reply-btn a {display:inline-block;padding:4px 8px;font-size:12px;color:#555;border:1px solid #ddd;border-radius:2px}
+.comment .comment-list li .more-btn {position:absolute;top:15px;right:15px}
+.comment .comment-list li .more-btn a {color:#555}
+.comment .comment-list li .more-btn a + a {margin-left:5px}
+.comment .comment-list li .more-btn a:hover {color:#d14452;transition:all .5s}
+.comment .comment-list li.reply {background:#f9f9f9}
+.comment .comment-list li.reply {position:relative;padding-left:40px;;padding-right:15px}
+.comment .comment-list li.reply > .info::before {content:'\221F';position:absolute;top:0;left:0;display:block;color:#999}
+.comment .comment-list li.reply > .info strong {margin-left:20px}
+.comment .comment-list li.reply > .con {padding-left:20px}
+.comment .comment-list li.reply > .reply-btn {padding-left:20px}
+.comment .comment-list li.reply > .comment-textarea {position:relative;margin-left:20px}
+.comment .comment-list li.reply > .comment-textarea::before {content:'\221F';position:absolute;top:0;left:-20px;display:block;color:#999}
+.comment .comment-textarea {border:1px solid #e5e5e5;border-radius:4px;background:#fff}
+.comment .comment-textarea .top {overflow:hidden;padding:10px;border-bottom:1px solid #e5e5e5}
+.comment .comment-textarea .top .info {float:left;line-height:30px}
+.comment .comment-textarea .top a {float:right;display:inline-block;padding:5px 10px;text-align:center;color:#fff;border-radius:5px;background:#d4515f}
+.comment .comment-textarea .bottom {width:100%;height:100px}
+.comment .comment-textarea .bottom textarea {width:100%;height:100%;padding:10px;border:none}
+
+#contents {padding:20px}
+.editor-title-1 {margin:50px 0 15px;font-family:'Noto Sans KR' !important;font-size:24px;font-weight:700;color:#333}
+.editor-title-2 {margin:20px 0;font-family:'Noto Sans KR' !important;font-size:20px;font-weight:700;color:#333}
+.editor-title-3 {margin:25px 0;font-family:'Noto Sans KR' !important;font-size:16px;font-weight:700;color:#333}
+.editor-title-1:first-of-type {margin-top:0}
+.editor-content {margin-bottom:5px;font-family:'Noto Sans KR' !important;font-size:14px;color:#555}
+.editor-list {margin-bottom:20px}
+.editor-list li {margin-bottom:5px;line-height:normal;font-family:'Noto Sans KR' !important}
+.editor-list li:last-child {margin-bottom:0}
+.editor-list li:before {content:'\2022';padding:0 5px}
+.editor-git-link {display:block;margin:20px 0;padding:10px 20px;line-height:24px;font-size:16px;border:1px solid #e5e5e5;border-radius:5px;color:#d14452}
+.editor-git-link i {line-height:24px;font-size:24px;vertical-align:top}
+.editor-git-link:hover {transition:all .5s;border-color:#d14452;color:#d14452}
+.editor-git-link:hover i {transition:all .5s;margin-left:5px}
+.editor-line {margin:50px 0;width:100% !important;height:1px;border:0;background:#e5e5e5}

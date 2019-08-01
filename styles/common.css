@@ -1,0 +1,442 @@
+/* reset */
+body {
+    margin: 0;
+    padding: 0;
+    line-height: 1.75em;
+    font-size: 12px;
+    letter-spacing: 0px;
+    user-select: none;
+    font-family: 'Noto Sans KR';
+}
+* {
+    margin: 0;
+    padding: 0;
+}
+li {
+    list-style: none;
+}
+i.material-icons {
+    vertical-align: middle;
+}
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+p {
+    margin: 0;
+}
+a:hover {
+    text-decoration: none;
+    color: none;
+}
+
+/* etc */
+.btn i {
+    font-size: inherit;
+}
+
+/* common */
+html,
+body {
+    height: 100%;
+}
+.wrapper,
+.main-wrapper,
+.sub-wrapper {
+    overflow: hidden;
+    min-width: 1224px;
+    height: 100%;
+    background: #f5f5f5;
+}
+
+.logo {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 50px;
+    margin: 50px auto;
+    line-height: 1.75em;
+    font-weight: 500;
+    z-index: 1;
+}
+.logo .logo-text-k {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    font-family: 'Fugaz One';
+    font-size: 50px;
+    color: #fff;
+}
+.logo .logo-text-no {
+    position: absolute;
+    top: 14px;
+    left: 35px;
+    font-family: 'Fugaz One';
+    font-size: 23px;
+    color: #fff;
+}
+.logo .logo-text-point {
+    position: absolute;
+    top: 42px;
+    left: 34px;
+    font-family: 'Fugaz One';
+    font-size: 40px;
+    color: #e69d2c;
+    letter-spacing: 0px;
+}
+
+.menu-container {
+    position: relative;
+    float: left;
+    width: 270px;
+    height: 100%;
+    background-size: cover;
+    box-sizing: border-box;
+}
+#__next {
+    height: 100%;
+}
+.menu-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+.menu-container .menu {
+    position: relative;
+    border: none;
+    box-shadow: none;
+}
+.menu-container .menu li {
+    overflow: hidden;
+    display: block;
+}
+.menu-container .menu li a {
+    display: block;
+    padding: 15px 20px;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.8);
+}
+.menu-container .menu li i {
+    width: auto;
+    margin-right: 10px;
+    vertical-align: bottom;
+    font-size: 22px;
+}
+.menu-container .menu li i.arrow {
+    margin: 0;
+    float: right;
+}
+.menu-container .menu li .collapsible-header {
+    border: none;
+    background: none;
+}
+.menu-container .menu li .collapsible-body {
+    padding: 0;
+    border: none;
+}
+.menu-container .menu li > ol a {
+    padding: 12px;
+    padding-left: 63px;
+    font-size: 13px;
+}
+.menu-container .menu li:hover > a {
+    transition: all 0.5s;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+.menu-container .menu li.on {
+    position: relative;
+}
+.menu-container .menu li.on > a {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+.menu-container .menu li.on::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    width: 5px;
+    height: 52px;
+    background: #d14452;
+}
+.menu-container .copyright {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.content-container {
+    overflow-y: auto;
+    position: relative;
+    float: left;
+    width: calc(100% - 270px);
+    height: 100%;
+    padding: 20px 30px 30px;
+    box-sizing: border-box;
+}
+
+.user-info {
+    margin-bottom: 20px;
+    text-align: right;
+}
+.user-info p {
+    display: inline-block;
+    line-height: 26px;
+    vertical-align: middle;
+}
+.user-info span {
+    display: inline-block;
+}
+.user-info span.user {
+    margin-right: 2px;
+    font-weight: 700;
+    color: #000;
+}
+.user-info span.time {
+    margin-left: 5px;
+    color: #999;
+}
+.user-info a {
+    margin-left: 10px;
+    padding: 4px 8px;
+    color: #fff;
+    border-radius: 4px;
+    background: #d14452;
+}
+
+.content-box .page {
+    margin-top: 20px;
+    text-align: center;
+}
+.content-box .page ul.pagination {
+    display: block;
+}
+.content-box .page ul.pagination li i {
+    font-size: 2em;
+}
+.content-box .page ul.pagination li a {
+    padding: 0 12px;
+    font-size: 1em;
+}
+.content-box .page ul.pagination li.active {
+    background: #d4515f;
+}
+.developer-button {
+    margin-top: 20px;
+    text-align: right;
+}
+.content-box .page ul.pagination li.active a {
+    color: #fff !important;
+}
+
+.content-box .button {
+    margin-top: 20px;
+    text-align: right;
+}
+.content-box .button a {
+    display: inline-block;
+    padding: 10px 20px;
+    text-align: center;
+    color: #fff;
+    border-radius: 5px;
+    background: #363636;
+}
+.content-box .button a + a {
+    margin-left: 5px;
+}
+.content-box .button a.submit {
+    background: #d14452;
+}
+.content-box .button a.cancel {
+    background: #777;
+}
+
+/* input */
+.input input[type='text'],
+.input input[type='number'],
+.input input[type='password'] {
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 4px;
+    width: 100%;
+    height: 45px;
+    box-sizing: border-box;
+    padding: 0 10px;
+    box-sizing: border-box;
+    padding-bottom: 3px;
+}
+.input select {
+    margin-bottom: 10px;
+    font-size: 16px;
+    border-color: #ddd;
+    border-radius: 4px;
+    outline: none;
+}
+.input textarea {
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 4px;
+    height: 120px;
+    resize: none;
+    outline: none;
+}
+.input textarea:focus,
+.input input[type='text']:focus,
+.input input[type='number']:focus,
+.input input[type='password']:focus,
+.input select:focus {
+    border-bottom: 1px solid #d4515f !important;
+    box-shadow: 0 1px 0 0 #d4515f !important;
+    transition: all 0.5s;
+}
+.input input[type='text'].error,
+.input input[type='number'].error,
+.input input[type='password'].error {
+    border-bottom: 1px solid #d4515f !important;
+    box-shadow: 0 1px 0 0 #d4515f !important;
+    transition: all 0.5s;
+}
+
+/* Modal */
+.notice-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1100;
+    outline: none;
+}
+.notice-modal-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    border-radius: 10px;
+    background: #fff;
+    z-index: 1111;
+}
+.notice-modal-container .modal-close {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    display: block;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    border-radius: 100%;
+    background: #d14452;
+    z-index: 1222;
+}
+.notice-modal-container .modal-close i {
+    line-height: 60px;
+    font-size: 40px;
+    color: #fff;
+}
+.notice-modal-container .modal-title {
+    width: 100%;
+    padding: 20px;
+    font-family: 'Hammersmith One';
+    font-weight: 600;
+    line-height: normal;
+    font-size: 16px;
+    border-radius: 10px 10px 0 0;
+    background: #e5e5e5;
+}
+.notice-modal-container .modal-content {
+    padding: 20px;
+    border: 0;
+}
+.notice-modal-container .modal-content p:only-of-type {
+    padding: 50px 0;
+    text-align: center;
+    font-size: 14px;
+}
+.notice-modal-container .modal-btn {
+    padding: 20px;
+    border-top: 1px solid #e5e5e5;
+    text-align: center;
+}
+.notice-modal-container .modal-btn a {
+    display: inline-block;
+    width: 100px;
+    padding: 10px 20px;
+    text-align: center;
+    color: #fff;
+    border-radius: 5px;
+}
+.notice-modal-container .modal-btn a + a {
+    margin-left: 10px;
+}
+.notice-modal-container .modal-btn a.submit {
+    background: #d14452;
+}
+.notice-modal-container .modal-btn a.cancel {
+    background: #777;
+}
+.notice-modal-container .modal-btn a.disabled {
+    opacity: 0.7;
+}
+.notice-modal-container .modal-content .highlightEditor textarea {
+    height: 400px;
+}
+
+/* summer note */
+.note-editor.note-frame.card {
+    margin: 0;
+    border: 1px solid #ddd;
+    box-shadow: none;
+}
+.note-editor.note-frame .card-header {
+    border-bottom: 1px solid #ddd;
+}
+.note-editor.note-frame .note-statusbar {
+    display: none;
+}
+.note-editor.note-frame .btn {
+    box-shadow: none;
+    border: 1px solid #ddd;
+}
+
+/* chart */
+div.contents:hover {
+    cursor: pointer;
+}
+div.tooltip {
+    opacity: 1;
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 12px;
+    color: #fff;
+    border: 0;
+    border-radius: 8px;
+    background: rgb(230, 157, 44);
+    pointer-events: none;
+}
